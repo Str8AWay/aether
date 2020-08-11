@@ -19,7 +19,9 @@ public:
     Quaternion(double w, double x, double y, double z);
     explicit Quaternion(const EulerAngles& angles);
     Quaternion multiply(Quaternion quat) const;
-    Quaternion operator*(const Quaternion& quat);
+    Quaternion operator*(const Quaternion& quat) const;
+    Quaternion operator*(double scalar) const;
+    Quaternion operator+(const Quaternion& quat) const;
     void normalize();
     EulerAngles toEuler() const;
 };

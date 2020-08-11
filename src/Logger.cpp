@@ -38,7 +38,7 @@ void Logger::log(typelog messageLevel, const String& message) const {
                 case INFO:
                 case WARN:
                 case ERROR:
-                    Serial.print(message);
+                    Serial.println(message);
                     break;
             }
             break;
@@ -49,7 +49,7 @@ void Logger::log(typelog messageLevel, const String& message) const {
                 case INFO:
                 case WARN:
                 case ERROR:
-                    Serial.print(message);
+                    Serial.println(message);
                     break;
             }
             break;
@@ -60,7 +60,7 @@ void Logger::log(typelog messageLevel, const String& message) const {
                     break;
                 case WARN:
                 case ERROR:
-                    Serial.print(message);
+                    Serial.println(message);
                     break;
             }
             break;
@@ -71,7 +71,7 @@ void Logger::log(typelog messageLevel, const String& message) const {
                 case WARN:
                     break;
                 case ERROR:
-                    Serial.print(message);
+                    Serial.println(message);
                     break;
             }
             break;

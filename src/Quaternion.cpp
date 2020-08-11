@@ -42,12 +42,30 @@ Quaternion Quaternion::multiply(Quaternion quat) const {
     return result;
 }
 
-Quaternion Quaternion::operator*(const Quaternion &quat) {
+Quaternion Quaternion::operator*(const Quaternion &quat) const {
     return multiply(quat);
 }
 
+Quaternion Quaternion::operator*(double scalar) const {
+    Quaternion result{};
+    result.w = w * scalar;
+    result.x = x * scalar;
+    result.y = y * scalar;
+    result.z = z * scalar;
+    return result;
+}
+
+Quaternion Quaternion::operator+(const Quaternion &quat) const {
+    Quaternion result{};
+    result.w = w + quat.w;
+    result.x = x + quat.x;
+    result.y = y + quat.y;
+    result.z = z + quat.z;
+    return result;
+}
+
 void Quaternion::normalize() {
-    double norm = w*w + x*x + y*y + z*z;
+    double norm = sqrt(w*w + x*x + y*y + z*z);
     w = w/norm;
     x = x/norm;
     y = y/norm;

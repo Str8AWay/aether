@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <Logger.h>
 #include "Quaternion.h"
+#include "DataFormatter.h"
 
 Logger logger = Logger(INFO);
 
@@ -11,40 +11,6 @@ Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
 
 sensors_event_t angVelocityData;
 sensors_event_t prev;
-
-void printData(double dt, sensors_event_t gyroData, Quaternion rotation, Quaternion orientation, EulerAngles euler) {
-    logger.info("dt (s): ");
-    logger.info(dt);
-    logger.info(", x (deg/s): ");
-    logger.info(gyroData.gyro.x);
-    logger.info(", y (deg/s): ");
-    logger.info(gyroData.gyro.y);
-    logger.info(", z (deg/s): ");
-    logger.info(gyroData.gyro.z);
-//  logger.info(", rotW: ");
-//  logger.info(rotation.w);
-//  logger.info(", rotX: ");
-//  logger.info(rotation.x);
-//  logger.info(", rotY: ");
-//  logger.info(rotation.y);
-//  logger.info(", rotZ: ");
-//  logger.info(rotation.z);
-    logger.info(", oriW: ");
-    logger.info(orientation.w);
-    logger.info(", oriX: ");
-    logger.info(orientation.x);
-    logger.info(", oriY: ");
-    logger.info(orientation.y);
-    logger.info(", oriZ: ");
-    logger.info(orientation.z);
-    logger.info(", pitch: ");
-    logger.info(euler.pitch * 180.0/PI);
-    logger.info(", yaw: ");
-    logger.info(euler.yaw * 180.0/PI);
-    logger.info(", roll: ");
-    logger.info(euler.roll * 180.0/PI);
-    logger.info("\n");
-}
 
 void setup() {
     if (!bno.begin(Adafruit_BNO055::OPERATION_MODE_ACCGYRO))
@@ -64,17 +30,16 @@ void loop() {
     bno.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
     if (angVelocityData.gyro.x != prev.gyro.x || angVelocityData.gyro.y != prev.gyro.y || angVelocityData.gyro.z != prev.gyro.z) {
         double dt = (angVelocityData.timestamp - prev.timestamp) / 1000.0;
-        EulerAngles angles{};
-        angles.yaw = angVelocityData.gyro.x*PI/180.0*dt;
-        angles.pitch = angVelocityData.gyro.y*PI/180.0*dt;
-        angles.roll = angVelocityData.gyro.z*PI/180.0*dt;
-        rotationQuat = Quaternion(angles);
-        rotationQuat.normalize();
-        orientation = rotationQuat * orientation;
+        rotationQuat.w = 0;
+        rotationQuat.x = radians(angVelocityData.gyro.x);
+        rotationQuat.y = radians(angVelocityData.gyro.y);
+        rotationQuat.z = radians(angVelocityData.gyro.z);
+        Quaternion orientationDerivative = orientation * 0.5 * rotationQuat;
+        orientation = orientation + orientationDerivative * dt;
         orientation.normalize();
         EulerAngles euler = orientation.toEuler();
 
-        printData(dt, angVelocityData, rotationQuat, orientation, euler);
+        logger.info(DataFormatter::toString(euler, orientationDerivative.toEuler(), angVelocityData));
 
         prev.timestamp = angVelocityData.timestamp;
         prev.gyro.x = angVelocityData.gyro.x;
