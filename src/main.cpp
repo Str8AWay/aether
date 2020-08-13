@@ -18,8 +18,9 @@ void setup() {
         logger.error("No BNO055 found");
         while (1);
     }
-
-//    bno.setGyroConfig(Adafruit_BNO055::GYRO_RANGE_2000, Adafruit_BNO055::GYRO_BANDWIDTH_523);
+    bno.setMode(Adafruit_BNO055::OPERATION_MODE_CONFIG);
+    bno.setGyroConfig(Adafruit_BNO055::GYRO_RANGE_250, Adafruit_BNO055::GYRO_BANDWIDTH_230);
+    bno.setMode(Adafruit_BNO055::OPERATION_MODE_ACCGYRO);
 
     prev.timestamp = millis();
 }

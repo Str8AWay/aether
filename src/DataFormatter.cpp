@@ -7,7 +7,8 @@
 String DataFormatter::toString(const EulerAngles &orientation, const EulerAngles &orientationDerivative,
                                sensors_event_t gyroData) {
     String entry = String();
-    entry += "x: ";
+    entry += millis();
+    entry += " - x: ";
     entry += degrees(orientation.pitch);
     entry += ",\ty: ";
     entry += degrees(orientation.yaw);
