@@ -163,6 +163,9 @@ void Adafruit_BNO055::setMode(adafruit_bno055_opmode_t mode) {
 }
 
 void Adafruit_BNO055::setGyroConfig(adafruit_bno055_gyrorange_t range, adafruit_bno055_gyrospeed_t bandwidth) {
+  adafruit_bno055_opmode_t mode = _mode;
+  setMode(Adafruit_BNO055::OPERATION_MODE_CONFIG);
+
   write8(BNO055_PAGE_ID_ADDR, 1);
   delay(30);
 
@@ -172,6 +175,7 @@ void Adafruit_BNO055::setGyroConfig(adafruit_bno055_gyrorange_t range, adafruit_
 
   write8(PAGE_ID, 0);
   delay(30);
+  setMode(mode);
 }
 
 /*!
