@@ -4,9 +4,12 @@
 
 #include "DataFormatter.h"
 
-String DataFormatter::toString(const EulerAngles &orientation, const EulerAngles &orientationDerivative,
+String DataFormatter::toString(int rocketState, const EulerAngles &orientation, const EulerAngles &orientationDerivative,
                                sensors_event_t gyroData) {
     String entry = String();
+    entry += "[";
+    entry += rocketState;
+    entry += "] ";
     entry += millis();
     entry += " - x: ";
     entry += degrees(orientation.pitch);
@@ -26,5 +29,17 @@ String DataFormatter::toString(const EulerAngles &orientation, const EulerAngles
     entry += gyroData.gyro.y;
     entry += ",\tgZ: ";
     entry += gyroData.gyro.z;
+    return entry;
+}
+
+String DataFormatter::toString(const Vector &acceleration) {
+    String entry = String();
+    entry += millis();
+    entry += " - x (m/s^2): ";
+    entry += acceleration.x;
+    entry += ",\ty (m/s^2): ";
+    entry += acceleration.y;
+    entry += ",\tz (m/s^2): ";
+    entry += acceleration.z;
     return entry;
 }

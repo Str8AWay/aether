@@ -30,4 +30,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/OrientationService.cpp include/OrientationService.h src/RGB.cpp src/RGB.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/IMUService.cpp include/IMUService.h src/RGB.cpp include/RGB.h src/Vector.cpp include/Vector.h)

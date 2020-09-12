@@ -8,10 +8,12 @@
 #include <Adafruit_Sensor.h>
 #include "Arduino.h"
 #include "EulerAngles.h"
+#include "Vector.h"
 
 class DataFormatter {
 public:
-    static String toString(const EulerAngles& orientation, const EulerAngles& orientationDerivative, sensors_event_t gyroData);
+    static String toString(int rocketState, const EulerAngles& orientation, const EulerAngles& orientationDerivative, sensors_event_t gyroData);
+    static String toString(const Vector& acceleration);
 };
 
 
