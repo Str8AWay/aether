@@ -2,6 +2,7 @@
 #include <Adafruit_BNO055.h>
 #include <Logger.h>
 #include <IMUService.h>
+#include <AltitudeService.h>
 #include "DataFormatter.h"
 #include "RGB.h"
 
@@ -11,6 +12,7 @@
 
 Logger logger = Logger(INFO);
 IMUService imuService;
+AltitudeService altitudeService;
 RGB rgb = RGB(LED_RED, LED_GREEN, LED_BLUE);
 
 enum RocketState {
@@ -33,7 +35,11 @@ void setup() {
     rgb.init();
     rgb.setColor(255, 0, 0);
     if (!imuService.init(Adafruit_BNO055::GYRO_RANGE_250, Adafruit_BNO055::GYRO_BANDWIDTH_230)) {
-        logger.error("Error initializing orientation service");
+        logger.error("Error initializing imu service");
+        while (true);
+    }
+    if (!altitudeService.init()) {
+        logger.error("Error initializing altitude service");
         while (true);
     }
     delay(2000);
@@ -44,22 +50,25 @@ void loop() {
     boolean orientationUpdate = imuService.updateOrientation();
     boolean accelerationUpdate = imuService.updateAccelerometer();
     if (orientationUpdate) {
-        logger.info(DataFormatter::toString(rocketState, imuService.orientation().toEuler(), imuService.orientationDerivative().toEuler(), imuService.rawGyro()));
+//        logger.info(DataFormatter::toString(rocketState, imuService.orientation().toEuler(), imuService.orientationDerivative().toEuler(), imuService.rawGyro()));
     }
     switch (rocketState) {
         case CALIBRATION:
             rgb.setColor(255, 255, 0);
+            altitudeService.calibrate();
             imuService.calibrateGyro(1000);
             imuService.zero();
             rocketState = READY_FOR_LAUNCH;
             break;
         case READY_FOR_LAUNCH:
             rgb.setColor(0, 255, 0);
-            if (accelerationUpdate && imuService.acceleration().y > -7) {
+            if (accelerationUpdate && imuService.acceleration().y > 0) {
                 rocketState = POWERED_ASCENT;
             }
             break;
         case POWERED_ASCENT:
+            rgb.setColor(0, 0, 255);
+            logger.info(String("Pressure (m): ") + altitudeService.pressure() + String(" Altitude (m): ") + altitudeService.altitude());
             break;
         case COAST:
             break;
